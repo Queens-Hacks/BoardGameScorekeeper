@@ -3,30 +3,52 @@
 </head>
 
 <template name="home">
-  <h1>Game Score Board of Awesome</h1>
-  <p>welcome to the home page</p>
-  <a href="{{pathFor 'login'}}"> Please log in </a>
-</template>
-
-<template name="login">
-  <h1>Please log in</h1>
-  {{> loginButtons}}
-  <div>
-    <a href="{{pathFor 'home'}}">Return Home</a>
-    <a href="{{pathFor 'user_home'}}">hack login</a>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Game Score Board of Awesome</h1>
+        <p>Welcome to the home page</p>
+        <p>Some description goes here</p>
+        {{> loginButtons}}
+      </div>
+    </div>
   </div>
+
+  <br/>
+  <br/>
+  <br/>
+  <a href="{{pathFor 'user_home'}}">hack login</a>
 </template>
 
 <template name="user_home">
-  <a href="{{pathFor 'game_selection'}}">Play a game</a>
+  <a href="{{pathFor 'game_search'}}">Play a game</a>
   <!-- view own stats -->
   <!-- view leaderboards -->
+  <!-- recently played games -->
 </template>
 
-<template name="game_selection">
-  <h1>Please select a game</h1>
-  <!-- loop create grid of available games -->
-  <div><a href="{{pathFor 'play_game' _name='catan'}}" >Settlers of Catan</a></div>
+<template name="game_search">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Board Game Search</h1>
+        <form role="form" class="search-form">
+          <div class="form-group">
+            <input type="text" class="form-control" name="gameName" placeholder="Enter a boardgame name to search">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      {{#each results}}
+        {{name}}
+      {{/each}}
+      <!-- loop -->
+      <div class="col-md-4"><a href="{{pathFor 'play_game' _name='catan'}}" >Settlers of Catan</a></div>
+    </div>
+  </div>
 </template>
 
 

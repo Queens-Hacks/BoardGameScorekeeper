@@ -1,7 +1,15 @@
+Games = new Meteor.Collection('games');
+
 Router.map(function() {
   this.route('home', { path: '/' });
-  this.route('login');
-  this.route('game_selection');
+  this.route('user_home');
+  this.route('game_search', {
+    data: function() {
+      return {
+        results: Games.find({ name: Session.get('query') })
+      };
+    }
+  });
   this.route('play_game', {
     path: '/play_game/:_name',
     data: function () {
@@ -18,7 +26,13 @@ Router.map(function() {
       };
     }
   });
-  this.route('user_home');
 });
 
-
+if (Meteor.isClient) {
+  Template.game_search.events({
+    'submit .search-form': function (e, tmpl) {
+      Session.set('query', tmpl.find('input[name=gameName]').value);
+      e.preventDefault();
+    }
+  });
+}

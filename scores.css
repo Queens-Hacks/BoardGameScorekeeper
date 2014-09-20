@@ -1,1 +1,4 @@
 /* CSS declarations go here */
+* {
+  border-radius: 1px !important;
+}
