@@ -11,4 +11,4 @@ accounts-ui
 iron:router
 pfafman:bootstrap-3
 http
-
+sergeyt:typeahead

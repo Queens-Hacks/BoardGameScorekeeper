@@ -1,20 +1,37 @@
-Games = new Meteor.Collection('games', {
-  transform: function(x) {
-    var out = {
-      players: x.players.map(function(player) {
-        return Meteor.users.findOne(player);
-      }),
-      game: x.game,
-      scores: x.scores
-    };
-
-    return out;
-  }
-});
+Games = new Meteor.Collection('games');
+Circles = new Meteor.Collection(null);
 
 if (Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
 }
+
+function findCircleMatches(q, cb) {
+  var strs = Circles.find().fetch().map(function(x) {
+    return x.displayName;
+  });
+
+  var matches, substrRegex;
+
+  // an array that will be populated with substring matches
+  matches = [];
+
+  // regex used to determine if a string contains the substring `q`
+  substrRegex = new RegExp(q, 'i');
+
+  // iterate through the pool of strings and for any string that
+  // contains the substring `q`, add it to the `matches` array
+  $.each(strs, function(i, str) {
+    if (substrRegex.test(str)) {
+      // the typeahead jQuery plugin expects suggestions to a
+      // JavaScript object, refer to typeahead docs for more info
+      matches.push({ value: str });
+    }
+  });
+
+  console.log(strs);
+
+  cb(matches);
+};
 
 // Ensure that people are logged in before they can access _ANYTHING_
 Router.configure({
@@ -58,6 +75,81 @@ if (Meteor.isClient) {
       e.preventDefault();
     }
   });
+
+  Template.play.events({
+    'click .add-player': function(e, tmpl) {
+      var gameId = Router._currentController.params._id;
+      var game = Games.findOne(gameId);
+
+      Games.update(gameId, {
+        $push: {
+          players: {
+            _id: Random.id(),
+            name: '',
+            score: 0
+          }
+        }
+      });
+    },
+    'keyup .player-score-input': function(e, tmpl) {
+      var val = e.currentTarget.value;
+      var _id = e.currentTarget.getAttribute('data-id');
+
+      var gameId = Router._currentController.params._id;
+      var game = Games.findOne(gameId);
+
+      game.players.forEach(function(player, i) {
+        if (_id === player._id) {
+          var set = {};
+          set['players.' + i + '.score'] = parseFloat(val);
+
+          Games.update(gameId, {$set: set});
+        }
+      });
+    },
+    'keyup .player-name-input': function(e, tmpl) {
+      var val = e.currentTarget.value;
+      var _id = e.currentTarget.getAttribute('data-id');
+
+      var gameId = Router._currentController.params._id;
+      var game = Games.findOne(gameId);
+
+      game.players.forEach(function(player, i) {
+        if (_id === player._id) {
+          var set = {};
+          set['players.' + i + '.name'] = val;
+
+          Games.update(gameId, {$set: set});
+        }
+      });
+    }
+  });
+
+  Template.textbox.rendered = function(tmpl) {
+    if (! Session.get('CirclesFetched')) {
+      Session.set('CirclesFetched', true);
+      console.log('here');
+      Meteor.call('getCircles', function(err, res) {
+        if (err) /* Fuck */ console.error(err);
+
+        res.forEach(function(person) {
+          Circles.insert(person);
+        });
+      });
+    }
+
+    var self = this;
+    Deps.autorun(function() {
+      console.log(Circles.find().fetch());
+      $(self.find('input')).typeahead({
+        hint: true,
+        highlight: true,
+        minLength: 1
+      }, {
+        source: findCircleMatches
+      });
+    });
+  };
 
   // Get the scopes when you log in! Woo!
   var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/plus.circles.read'];

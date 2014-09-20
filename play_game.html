@@ -11,15 +11,16 @@
             <thead>
               <tr>
                 {{#each players}}
-                <th>{{name}}</th>
+                <th>{{> textbox}}</th>
                 {{/each}}
+                <th style="width: 1px; padding-left: 0px"><button type="button" class="btn btn-success add-player">+</button></th>
               </tr>
             </thead>
             <tbody>
               <tr>
                 {{#each players}}
                 <td>
-                  <input type="number" class="form-control" id="{{_id}}">
+                  <input type="number" class="player-score-input form-control" data-id="{{_id}}" value="{{score}}">
                 </td>
                 {{/each}}
               </tr>
@@ -32,4 +33,8 @@
       </div>
     </div>
   </div>
+</template>
+
+<template name="textbox">
+  <input type="text" class="player-name-input form-control" placeholder="Player name..." value="{{name}}" style="border:none" data-id="{{_id}}">
 </template>
