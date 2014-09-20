@@ -107,7 +107,7 @@ if (Meteor.isClient) {
         }
       });
     },
-    'keyup .player-name-input': function(e, tmpl) {
+    'keyup .player-name-input, blur .player-name-input': function (e, tmpl) {
       var val = e.currentTarget.value;
       var _id = e.currentTarget.getAttribute('data-id');
 
@@ -122,12 +122,21 @@ if (Meteor.isClient) {
           Games.update(gameId, {$set: set});
         }
       });
+    },
+    'click .player-remove': function(e, tmpl) {
+      var _id = e.currentTarget.getAttribute('data-id');
+
+      var gameId = Router._currentController.params._id;
+      var game = Games.findOne(gameId);
+
+      Games.update(gameId, {$set: {'players': game.players.filter(function(player) { return _id !== player._id; })}});
     }
   });
 
+  var circlesFetched = false;
   Template.textbox.rendered = function(tmpl) {
-    if (! Session.get('CirclesFetched')) {
-      Session.set('CirclesFetched', true);
+    if (! circlesFetched) {
+      circlesFetched = true;
       console.log('here');
       Meteor.call('getCircles', function(err, res) {
         if (err) /* Fuck */ console.error(err);
