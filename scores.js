@@ -112,7 +112,7 @@ if (Meteor.isClient) {
       });
     },
 
-    'keyup .player-score-input': function(e, tmpl) {
+    'keyup .player-score-input, blur .player-score-input': function(e, tmpl) {
       var val = e.currentTarget.value;
       var _id = e.currentTarget.getAttribute('data-id');
 
