@@ -11,7 +11,5 @@ accounts-ui
 iron:router
 pfafman:bootstrap-3
 http
-vjau:xml2js
 sergeyt:typeahead
 pfafman:font-awesome-4
-
