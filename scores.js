@@ -63,9 +63,11 @@ Router.map(function() {
   this.route('home', {
     path: '/',
     data: function() {
+        var active = Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: {$not: true}  }),
+          inactive = Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: true });
       return {
-        active: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: {$not: true}  }),
-        inactive: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: true })
+        active: active,
+        inactive: inactive
       };
     }
   });
