@@ -65,7 +65,9 @@
                     </a>
                   </td>
                   <td>
-                    {{game.winner}}
+                    {{#with winner players}}
+                      <b>{{name}}</b>: {{score}};
+                    {{/with}}
                   </td>
                   <td>
                     {{#each filterPlayerArray players}}
