@@ -64,8 +64,8 @@ Router.map(function() {
     path: '/',
     data: function() {
       return {
-        active: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } } }),
-        inactive: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } } })
+        active: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: {$not: true}  }),
+        inactive: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: true })
       };
     }
   });
