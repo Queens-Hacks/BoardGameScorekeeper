@@ -35,36 +35,37 @@
     <div class="row">
       <div class="col-md-12">
         <h1>Currently playing <a href="{{game.bgglink}}" target="_blank">{{game.name}}</a></h1>
-
-        <table class="table">
-          <thead>
-            <tr>
-              <th></th>
-              {{#each players}}
-                <th>{{this}}</th>
-              {{/each}}
-            </tr>
-          </thead>
-          <tbody>
-            {{#each scoreItems}}
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
               <tr>
-                <td>{{this}}</td>
-                {{#each ../players}}
-                  <td>
-                    <!-- can we make id="player-scoreItem" ?? -->
-                    <input type="number" class="form-control" id="{{this}}-">
-                  </td>
+                <th></th>
+                {{#each players}}
+                  <th>{{this}}</th>
                 {{/each}}
               </tr>
-            {{/each}}
-            <tr>
-              <th>Total</th>
-              <td>__X</td>
-              <td>__X</td>
-              <td>__X</td>
-            </tr>
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {{#each scoreItems}}
+                <tr>
+                  <td>{{this}}</td>
+                  {{#each ../players}}
+                    <td>
+                      <!-- can we make id="player-scoreItem" ?? -->
+                      <input type="number" class="form-control" id="{{this}}-">
+                    </td>
+                  {{/each}}
+                </tr>
+              {{/each}}
+              <tr>
+                <th>Total</th>
+                <td>__X</td>
+                <td>__X</td>
+                <td>__X</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
         <!-- save the score of the game and return home-->
         <button type="button" class="btn btn-primary">Save and Exit game</button>
         <button type="button" class="btn btn-default">Abort game</button>
