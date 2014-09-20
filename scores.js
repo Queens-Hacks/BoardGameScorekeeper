@@ -272,14 +272,17 @@ if (Meteor.isServer) {
       return Games.insert({
         players: [
           {
+            _id: Random.id(),
             name: user.profile.name,
             score: 0
           },
           {
+            _id: Random.id(),
             name: '',
             score: 0
           },
           {
+            _id: Random.id(),
             name: '',
             score: 0
           }
