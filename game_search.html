@@ -1,0 +1,23 @@
+<template name="game_search">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Board Game Search</h1>
+        <form role="form" class="search-form">
+          <div class="form-group">
+            <input type="text" class="form-control" name="gameName" placeholder="Enter a boardgame name to search">
+          </div>
+          <button type="submit" class="btn btn-default">Submit</button>
+        </form>
+      </div>
+    </div>
+    <hr/>
+    <div class="row">
+      {{#each results}}
+        {{name}}
+      {{/each}}
+      <!-- loop -->
+      <div class="col-md-4"><a href="{{pathFor 'play_game' _name='catan'}}" >Settlers of Catan</a></div>
+    </div>
+  </div>
+</template>
