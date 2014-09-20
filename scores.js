@@ -2,9 +2,13 @@ Games = new Meteor.Collection('games');
 Circles = new Meteor.Collection(null);
 
 
+// Configuration on the client for Meteor
 if (Meteor.isClient) {
   Session.setDefault('searchQuery', '');
   Router.onBeforeAction('dataNotFound');
+  // Get the scopes when you log in! Woo!
+  var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/plus.circles.read'];
+  Accounts.ui.config({'requestPermissions': {'google':scopes}});
 }
 
 // Yeah, we need to do this...
@@ -12,33 +16,21 @@ RegExp.escape = function(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
-function findCircleMatches(q, cb) {
-  var strs = Circles.find().fetch().map(function(x) {
-    return x.displayName;
-  });
+var circlesFetched = false;
+function fetchCircles() {
+  if (! circlesFetched) {
+    circlesFetched = true;
+    console.log('here');
+    Meteor.call('getCircles', function(err, res) {
+      if (err) /* Fuck */ console.error(err);
 
-  var matches, substrRegex;
-
-  // an array that will be populated with substring matches
-  matches = [];
-
-  // regex used to determine if a string contains the substring `q`
-  substrRegex = new RegExp(q, 'i');
-
-  // iterate through the pool of strings and for any string that
-  // contains the substring `q`, add it to the `matches` array
-  $.each(strs, function(i, str) {
-    if (substrRegex.test(str)) {
-      // the typeahead jQuery plugin expects suggestions to a
-      // JavaScript object, refer to typeahead docs for more info
-      matches.push({ value: str });
-    }
-  });
-
-  console.log(strs);
-
-  cb(matches);
+      res.forEach(function(person) {
+        Circles.insert(person);
+      });
+    });
+  }
 }
+
 
 // Ensure that people are logged in before they can access _ANYTHING_
 Router.configure({
@@ -81,21 +73,6 @@ if (Meteor.isClient) {
     'keyup .search-form': function (e, tmpl) {
       e.preventDefault();
       Session.set('searchQuery', tmpl.find('input[name=gameName]').value);
-      /* Session.set('searching', true);
-      Meteor.call('search', tmpl.find('input[name=gameName]').value, function (err, result){
-        if (err){
-          console.error("ERROR", err);
-        } else {
-          result = result.map(function (item){
-              if (item.thumbnail) item.thumbnail = item.thumbnail[0];
-              item.name = item.name[0].$.value;
-              return item;
-          });
-          Session.set('searchResults', result);
-          Session.set('searching', false);
-          console.log(result);
-        }
-      }); */
     }
   });
 
@@ -114,6 +91,7 @@ if (Meteor.isClient) {
         }
       });
     },
+
     'keyup .player-score-input': function(e, tmpl) {
       var val = e.currentTarget.value;
       var _id = e.currentTarget.getAttribute('data-id');
@@ -130,6 +108,7 @@ if (Meteor.isClient) {
         }
       });
     },
+
     'keyup .player-name-input, blur .player-name-input': function (e, tmpl) {
       var val = e.currentTarget.value;
       var _id = e.currentTarget.getAttribute('data-id');
@@ -146,6 +125,7 @@ if (Meteor.isClient) {
         }
       });
     },
+
     'click .player-remove': function(e, tmpl) {
       var _id = e.currentTarget.getAttribute('data-id');
 
@@ -156,18 +136,35 @@ if (Meteor.isClient) {
     }
   });
 
-  var circlesFetched = false;
   Template.textbox.rendered = function(tmpl) {
-    if (! circlesFetched) {
-      circlesFetched = true;
-      console.log('here');
-      Meteor.call('getCircles', function(err, res) {
-        if (err) /* Fuck */ console.error(err);
+    fetchCircles();
 
-        res.forEach(function(person) {
-          Circles.insert(person);
-        });
+    function findCircleMatches(q, cb) {
+      var strs = Circles.find().fetch().map(function(x) {
+        return x.displayName;
       });
+
+      var matches, substrRegex;
+
+      // an array that will be populated with substring matches
+      matches = [];
+
+      // regex used to determine if a string contains the substring `q`
+      substrRegex = new RegExp(q, 'i');
+
+      // iterate through the pool of strings and for any string that
+      // contains the substring `q`, add it to the `matches` array
+      $.each(strs, function(i, str) {
+        if (substrRegex.test(str)) {
+          // the typeahead jQuery plugin expects suggestions to a
+          // JavaScript object, refer to typeahead docs for more info
+          matches.push({ value: str });
+        }
+      });
+
+      console.log(strs);
+
+      cb(matches);
     }
 
     var self = this;
@@ -183,9 +180,6 @@ if (Meteor.isClient) {
     });
   };
 
-  // Get the scopes when you log in! Woo!
-  var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/plus.circles.read'];
-  Accounts.ui.config({'requestPermissions': {'google':scopes}});
 }
 
 var XML2JSCONFIG = {
