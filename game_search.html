@@ -13,14 +13,20 @@
     </div>
     <hr/>
     <div class="row">
-      {{#each results}}
-        <div class="col-md-3">
-          <a href="#" >
-            <img src="{{thumbnail}}">
-            <p>{{name}}</p>
-          </a>
+      {{#if searching}}
+        <div class="text-center">
+          <span class="fa fa-spin fa-circle-o-notch fa-5x"></span>
         </div>
-      {{/each}}
+      {{else}}
+        {{#each results}}
+          <div class="col-md-3">
+            <a href="#" >
+              <img src="{{thumbnail}}">
+              <p>{{name}}</p>
+            </a>
+          </div>
+        {{/each}}
+      {{/if}}
     </div>
   </div>
 </template>

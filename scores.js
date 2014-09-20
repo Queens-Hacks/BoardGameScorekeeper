@@ -57,7 +57,8 @@ Router.map(function() {
   this.route('game_search', {
     data: function() {
       return {
-        results: Session.get('searchResults')
+        results: Session.get('searchResults'),
+        searching: Session.get('searching')
       };
     }
   });
@@ -71,6 +72,7 @@ if (Meteor.isClient) {
   Template.game_search.events({
     'submit .search-form': function (e, tmpl) {
       e.preventDefault();
+      Session.set('searching', true);
       Meteor.call('search', tmpl.find('input[name=gameName]').value, function (err, result){
         if (err){
           console.error("ERROR", err);
@@ -81,6 +83,7 @@ if (Meteor.isClient) {
               return item;
           });
           Session.set('searchResults', result);
+          Session.set('searching', false);
           console.log(result);
         }
       });
