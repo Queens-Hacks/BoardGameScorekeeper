@@ -60,22 +60,6 @@ RegExp.escape = function(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
 
-/* var circlesFetched = false;
-function fetchCircles() {
-  if (! circlesFetched) {
-    circlesFetched = true;
-    console.log('here');
-    Meteor.call('getCircles', function(err, res) {
-      if (err) /* Fuck * / console.error(err);
-
-      res.forEach(function(person) {
-        Circles.insert(person);
-      });
-    });
-  }
-} */
-
-
 // Ensure that people are logged in before they can access _ANYTHING_
 Router.configure({
   before: function(pause) {
@@ -158,6 +142,17 @@ if (Meteor.isClient) {
           }
         }
       });
+    },
+
+    'click .end-game-button': function(e, tmpl) {
+      var gameId = Router.current().params._id;
+      var game = Games.findOne(gameId);
+
+      if (confirm('Are you sure you want to end the game?')) {
+        Games.update(gameId, {
+          $set: { retired: true }
+        });
+      }
     },
 
     'keyup .player-score-input, blur .player-score-input': function(e, tmpl) {
