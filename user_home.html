@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-12">
         <div align="center">
-          <a class="btn btn-default" href="{{pathFor 'game_search'}}">Play a game</a>
+          <a class="btn btn-success" href="{{pathFor 'game_search'}}">Play a new game</a>
           <!-- view own stats -->
           <!-- view leaderboards -->
           <!-- recently played games -->
@@ -12,24 +12,64 @@
     </div>
     <hr/>
     <div class="row">
-      {{#each active}}
-        {{> single_real_game}}
-      {{/each}}
+      <div class="col-md-6 col-sm-12">
+        <h3>Active Games</h3>
+        <table class="table table-striped">
+          <thead>
+            <th colspan="2">Game</th>
+            <th style="width:100%">Scores</th>
+          </thead>
+          <tbody style="vertical-align:middle;">
+            {{#each active}}
+              <tr>
+                <td style="white-space: nowrap;" align="center">
+                  <img src="{{game.thumbnail}}" style="max-height:40px">
+                </td>
+                <td>
+                  <a href="{{pathFor 'play' _id=_id}}" style="white-space: nowrap;">
+                    {{game.name}}
+                  </a>
+                </td>
+                <td>
+                  {{game.joinedScores}}
+                </td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </div>
+      {{#if inactive.length}}
+        <div class="col-md-6 col-sm-12">
+          <h3>Recently finished games</h3>
+          <table class="table table-striped">
+            <thead>
+              <th colspan="2">Game</th>
+              <th>Winner</th>
+              <th style="width:100%">Scores</th>
+            </thead>
+            <tbody style="vertical-align:middle;">
+              {{#each inactive}}
+                <tr>
+                  <td style="white-space: nowrap;" align="center">
+                    <img src="{{game.thumbnail}}" style="max-height:40px">
+                  </td>
+                  <td>
+                    <a href="{{pathFor 'play' _id=_id}}" style="white-space: nowrap;">
+                      {{game.name}}
+                    </a>
+                  </td>
+                  <td>
+                    {{game.winner}}
+                  </td>
+                  <td>
+                    {{game.joinedScores}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{/if}}
     </div>
-    <hr/>
-    <div class="row">
-      {{#each inactive}}
-        {{> single_real_game}}
-      {{/each}}
-    </div>
-  </div>
-</template>
-
-<template name="single_real_game">
-  <div class="col-lg-3 col-md-4 col-xs-6" style="height:225px;">
-    <a class="thumbnail" href="{{pathFor 'play' _id=_id}}" style="padding-top: 5px;">
-      <img class="img-responsive" src="{{game.thumbnail}}" style="max-height:200px">
-      <p align="center" style="margin: 6px 0 0 5px;">{{game.name}}</p>
-    </a>
   </div>
 </template>
