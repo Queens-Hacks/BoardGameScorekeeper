@@ -1,9 +1,17 @@
 Games = new Meteor.Collection('games');
 Circles = new Meteor.Collection(null);
 
+
 if (Meteor.isClient) {
+  Session.setDefault('searchQuery', '');
+
   Router.onBeforeAction('dataNotFound');
 }
+
+// Yeah, we need to do this...
+RegExp.escape = function(text) {
+  return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+};
 
 function findCircleMatches(q, cb) {
   var strs = Circles.find().fetch().map(function(x) {
@@ -57,8 +65,7 @@ Router.map(function() {
   this.route('game_search', {
     data: function() {
       return {
-        results: Session.get('searchResults'),
-        searching: Session.get('searching')
+        results: BoardGames.find({name: { $regex: RegExp.escape(Session.get('searchQuery')), $options: 'i' }})
       };
     }
   });
@@ -70,9 +77,10 @@ Router.map(function() {
 
 if (Meteor.isClient) {
   Template.game_search.events({
-    'submit .search-form': function (e, tmpl) {
+    'keyup .search-form': function (e, tmpl) {
       e.preventDefault();
-      Session.set('searching', true);
+      Session.set('searchQuery', tmpl.find('input[name=gameName]').value);
+      /* Session.set('searching', true);
       Meteor.call('search', tmpl.find('input[name=gameName]').value, function (err, result){
         if (err){
           console.error("ERROR", err);
@@ -86,7 +94,7 @@ if (Meteor.isClient) {
           Session.set('searching', false);
           console.log(result);
         }
-      });
+      }); */
     }
   });
 
@@ -222,7 +230,7 @@ if (Meteor.isServer) {
   Meteor.methods({
     getCircles: function() {
       // Get all of the circles
-      if (! this.userId) throw new Meteor.Error(400, 'You must be logged in to get your circles');
+      if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to get your circles');
 
       var user = Meteor.users.findOne(this.userId);
       var accessToken = user.services.google.accessToken;
@@ -240,6 +248,22 @@ if (Meteor.isServer) {
       }).reduce(function(x, y) { return x.concat(y); }, []);
 
       return people;
+    },
+
+    makeGame: function(gameName, gameThumbnail) {
+      if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to make a game');
+
+      var user = Meteor.users.findOne(this.userId);
+      return Games.insert({
+        players: [{
+          name: user.services.google.displayName,
+          score: 0
+        }],
+        game: {
+          name: gameName,
+          thumbnail: gameThumbnail
+        }
+      });
     }
   });
 }

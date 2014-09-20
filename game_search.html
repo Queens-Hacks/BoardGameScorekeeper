@@ -7,7 +7,6 @@
           <div class="form-group">
             <input type="text" class="form-control" name="gameName" placeholder="Enter a boardgame name to search">
           </div>
-          <button type="submit" class="btn btn-default">Submit</button>
         </form>
       </div>
     </div>
@@ -19,14 +18,18 @@
         </div>
       {{else}}
         {{#each results}}
-          <div class="col-md-3">
-            <a href="#" >
-              <img src="{{thumbnail}}">
-              <p>{{name}}</p>
-            </a>
-          </div>
+          {{> single_game}}
         {{/each}}
       {{/if}}
     </div>
+  </div>
+</template>
+
+<template name="single_game">
+  <div class="col-md-3">
+    <a href="#" data-name="{{name}}">
+      <img src="{{thumbnail}}">
+      <p>{{name}}</p>
+    </a>
   </div>
 </template>
