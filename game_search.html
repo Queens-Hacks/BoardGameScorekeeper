@@ -14,10 +14,13 @@
     <hr/>
     <div class="row">
       {{#each results}}
-        {{name}}
+        <div class="col-md-3">
+          <a href="#" >
+            <img src="{{thumbnail}}">
+            <p>{{name}}</p>
+          </a>
+        </div>
       {{/each}}
-      <!-- loop -->
-      <div class="col-md-4"><a href="{{pathFor 'play_game' _name='catan'}}" >Settlers of Catan</a></div>
     </div>
   </div>
 </template>
