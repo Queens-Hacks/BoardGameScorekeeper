@@ -1,7 +1,5 @@
 <head>
   <title>Game Score Board of Awesome</title>
-  <link rel="stylesheet" type="text/css" href="normalize.css">
-  <link rel="stylesheet" href="pure.min.css">
 </head>
 
 <template name="home">
@@ -20,14 +18,12 @@
 </template>
 
 <template name="user_home">
-  {{> navbar}}
   <a href="{{pathFor 'game_selection'}}">Play a game</a>
   <!-- view own stats -->
   <!-- view leaderboards -->
 </template>
 
 <template name="game_selection">
-  {{> navbar}}
   <h1>Please select a game</h1>
   <!-- loop create grid of available games -->
   <div><a href="{{pathFor 'play_game' _name='catan'}}" >Settlers of Catan</a></div>
@@ -35,45 +31,44 @@
 
 
 <template name="play_game">
-  <h1>Currently playing <a href="http://boardgamegeek.com/boardgame/13/settlers-catan">Settlers of Catan</a></h1>
-  <!-- generate score table -->
-  <!-- top row, player names -->
-  <!-- first column for categories -->
-  <!-- other boxes should be inputs -->
-  <!-- bottom row total -->
-  <table>
-    <tr>
-      <th></th>
-      <th>Graham</th>
-      <th>Carey</th>
-      <th>Michael</th>
-    </tr>
-    <tr>
-      <th>Settlements</th>
-      <td>3</td>
-      <td>3</td>
-      <td>4</td>
-    </tr>
-    <tr>
-      <th>Cities</th>
-      <td>1</td>
-      <td>2</td>
-      <td>0</td>
-    </tr>
-    <tr>
-      <th>Total</th>
-      <td>5</td>
-      <td>7</td>
-      <td>4</td>
-    </tr>
-  </table>
-  <!-- save the score of the game and return home-->
-  <p><a href="#">Done game</a></p>
-  {{> navbar}}
-</template>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-12">
+        <h1>Currently playing <a href="{{game.bgglink}}" target="_blank">{{game.name}}</a></h1>
 
-<template name="navbar">
-  <div>
-    <a href="{{pathFor 'user_home'}}">User Home Page</a>
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              {{#each players}}
+                <th>{{this}}</th>
+              {{/each}}
+            </tr>
+          </thead>
+          <tbody>
+            {{#each scoreItems}}
+              <tr>
+                <td>{{this}}</td>
+                {{#each ../players}}
+                  <td>
+                    <!-- can we make id="player-scoreItem" ?? -->
+                    <input type="number" class="form-control" id="{{this}}-">
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+            <tr>
+              <th>Total</th>
+              <td>__X</td>
+              <td>__X</td>
+              <td>__X</td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- save the score of the game and return home-->
+        <button type="button" class="btn btn-primary">Save and Exit game</button>
+        <button type="button" class="btn btn-default">Abort game</button>
+      </div>
+    </div>
   </div>
 </template>
