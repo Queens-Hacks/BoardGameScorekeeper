@@ -38,12 +38,12 @@ Router.configure({
   before: function(pause) {
     var routeName = this.route.name;
 
-    if (_.include(['home'], routeName)) // SKIP
+    if (_.include(['play'], routeName)) // SKIP
       return undefined;
 
     var user = Meteor.user();
     if (! user) {
-      this.render(Meteor.loggingIn() ? this.loadingTemplate : 'home');
+      this.render(Meteor.loggingIn() ? this.loadingTemplate : 'login');
       return pause();
     }
     return undefined;
@@ -54,7 +54,6 @@ Router.configure({
 
 Router.map(function() {
   this.route('home', { path: '/' });
-  this.route('user_home');
   this.route('game_search', {
     data: function() {
       return {
@@ -85,46 +84,6 @@ if (Meteor.isClient) {
           console.log(result);
         }
       });
-    }
-  });
-}
-
-var XML2JSCONFIG = {
-  explicitArray: true
-};
-if (Meteor.isServer) {
-  Meteor.methods({
-    search: function(query){
-      check(query, String);
-      var url = 'http://www.boardgamegeek.com/xmlapi2/search?query='+encodeURIComponent(query)+'&type=boardgame,boardgameexpansion';
-      var xml = HTTP.get(url).content;
-      var games;
-      xml2js.parseString(xml,
-        XML2JSCONFIG,
-        function (err, result){
-          if (err){
-            console.error("ERROR", err);
-          } else {
-            var gameIds = result.items.item.slice(0, Math.min(10, result.items.item.length)).map(
-              function (game){
-                return game.$.id;
-              }
-            );
-            var xml2 = HTTP.get('http://www.boardgamegeek.com/xmlapi2/thing?&id=' + gameIds.join()).content;
-            xml2js.parseString(xml2,
-              XML2JSCONFIG,
-              function (err, result){
-                if (err){
-                  console.error("ERROR", err);
-                } else {
-                  games = result.items.item;
-                }
-              }
-            );
-          }
-        }
-      );
-      return games;
     }
   });
 
@@ -217,7 +176,46 @@ if (Meteor.isServer) {
   Accounts.ui.config({'requestPermissions': {'google':scopes}});
 }
 
+var XML2JSCONFIG = {
+  explicitArray: true
+};
 if (Meteor.isServer) {
+  Meteor.methods({
+    search: function(query){
+      check(query, String);
+      var url = 'http://www.boardgamegeek.com/xmlapi2/search?query='+encodeURIComponent(query)+'&type=boardgame,boardgameexpansion';
+      var xml = HTTP.get(url).content;
+      var games;
+      xml2js.parseString(xml,
+        XML2JSCONFIG,
+        function (err, result){
+          if (err){
+            console.error("ERROR", err);
+          } else {
+            var gameIds = result.items.item.slice(0, Math.min(10, result.items.item.length)).map(
+              function (game){
+                return game.$.id;
+              }
+            );
+            var xml2 = HTTP.get('http://www.boardgamegeek.com/xmlapi2/thing?&id=' + gameIds.join()).content;
+            xml2js.parseString(xml2,
+              XML2JSCONFIG,
+              function (err, result){
+                if (err){
+                  console.error("ERROR", err);
+                } else {
+                  games = result.items.item;
+                }
+              }
+            );
+          }
+        }
+      );
+      return games;
+    }
+  });
+
+
   Meteor.methods({
     getCircles: function() {
       // Get all of the circles
