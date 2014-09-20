@@ -1504,11 +1504,12 @@ var gameFixtures = [
 ];
 
 if (Meteor.isServer) {
-  BoardGames.remove({});
+  // BoardGames.remove({});
 
   gameFixtures.forEach(function(fixture) {
     fixture.thumbnail = fixture.mini_thumbnail.replace(/_mt/, '_t');
     fixture.image = fixture.mini_thumbnail.replace(/_mt/, '');
-    BoardGames.insert(fixture);
+    if (! BoardGames.findOne({name: fixture.name}))
+      BoardGames.insert(fixture);
   });
 }
