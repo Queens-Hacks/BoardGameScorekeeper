@@ -270,10 +270,20 @@ if (Meteor.isServer) {
 
       var user = Meteor.users.findOne(this.userId);
       return Games.insert({
-        players: [{
-          name: user.profile.name,
-          score: 0
-        }],
+        players: [
+          {
+            name: user.profile.name,
+            score: 0
+          },
+          {
+            name: '',
+            score: 0
+          },
+          {
+            name: '',
+            score: 0
+          }
+        ],
         game: _id
       });
     }
