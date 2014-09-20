@@ -1,14 +1,50 @@
 Games = new Meteor.Collection('games', {
   transform: function(game) {
-    console.log(game);
     var theGame = BoardGames.findOne(game.game);
-    console.log(theGame);
     game.game = theGame;
     return game; // You lost
   }
 });
-Circles = new Meteor.Collection(null);
+Circles = new Meteor.Collection('circles');
 
+function getCircles(userId) {
+  // Get all of the circles
+  try {
+    var user = Meteor.users.findOne(userId);
+    var accessToken = user.services.google.accessToken;
+    var id = user.services.google.id;
+    var circles = (HTTP.get("https://www.googleapis.com/plusDomains/v1/people/" + id + "/circles", {
+      params: { access_token: accessToken }
+    })).data.items;
+
+    var people = circles.map(function(circle) {
+      var peoplePeople = HTTP.get("https://www.googleapis.com/plusDomains/v1/circles/" + circle.id + "/people", {
+        params: { access_token: accessToken }
+      });
+
+      return peoplePeople.data.items;
+    }).reduce(function(x, y) { return x.concat(y); }, []);
+
+    Circles.remove({ user: userId });
+    people.forEach(function(person) {
+      person.user = userId;
+      Circles.insert(person);
+    });
+  } catch(e) { /* Non-event, no big deal */ }
+
+  return people;
+}
+
+if (Meteor.isServer) {
+  Meteor.users.find().observeChanges({
+    added: function(id) {
+      getCircles(id);
+    },
+    changed: function(id) {
+      getCircles(id);
+    }
+  });
+}
 
 // Configuration on the client for Meteor
 if (Meteor.isClient) {
@@ -23,22 +59,6 @@ if (Meteor.isClient) {
 RegExp.escape = function(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
-
-var circlesFetched = false;
-function fetchCircles() {
-  if (! circlesFetched) {
-    circlesFetched = true;
-    console.log('here');
-    Meteor.call('getCircles', function(err, res) {
-      if (err) /* Fuck */ console.error(err);
-
-      res.forEach(function(person) {
-        Circles.insert(person);
-      });
-    });
-  }
-}
-
 
 // Ensure that people are logged in before they can access _ANYTHING_
 Router.configure({
@@ -124,6 +144,17 @@ if (Meteor.isClient) {
       });
     },
 
+    'click .end-game-button': function(e, tmpl) {
+      var gameId = Router.current().params._id;
+      var game = Games.findOne(gameId);
+
+      if (confirm('Are you sure you want to end the game?')) {
+        Games.update(gameId, {
+          $set: { retired: true }
+        });
+      }
+    },
+
     'keyup .player-score-input, blur .player-score-input': function(e, tmpl) {
       var val = e.currentTarget.value;
       var _id = e.currentTarget.getAttribute('data-id');
@@ -169,10 +200,8 @@ if (Meteor.isClient) {
   });
 
   Template.textbox.rendered = function(tmpl) {
-    fetchCircles();
-
     function findCircleMatches(q, cb) {
-      var strs = Circles.find().fetch().map(function(x) {
+      var strs = Circles.find({ user: Meteor.userId() }).fetch().map(function(x) {
         return x.displayName;
       });
 
@@ -194,14 +223,11 @@ if (Meteor.isClient) {
         }
       });
 
-      console.log(strs);
-
       cb(matches);
     }
 
     var self = this;
     Deps.autorun(function() {
-      console.log(Circles.find().fetch());
       $(self.find('input')).typeahead({
         hint: true,
         highlight: true,
@@ -276,28 +302,6 @@ if (Meteor.isServer) {
 
 
   Meteor.methods({
-    getCircles: function() {
-      // Get all of the circles
-      if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to get your circles');
-
-      var user = Meteor.users.findOne(this.userId);
-      var accessToken = user.services.google.accessToken;
-      var id = user.services.google.id;
-      var circles = (HTTP.get("https://www.googleapis.com/plusDomains/v1/people/" + id + "/circles", {
-        params: { access_token: accessToken }
-      })).data.items;
-
-      var people = circles.map(function(circle) {
-        var peoplePeople = HTTP.get("https://www.googleapis.com/plusDomains/v1/circles/" + circle.id + "/people", {
-          params: { access_token: accessToken }
-        });
-
-        return peoplePeople.data.items;
-      }).reduce(function(x, y) { return x.concat(y); }, []);
-
-      return people;
-    },
-
     makeGame: function(_id) {
       if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to make a game');
 
