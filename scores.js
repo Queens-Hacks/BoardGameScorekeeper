@@ -63,12 +63,16 @@ Router.map(function() {
   this.route('home', {
     path: '/',
     data: function() {
-      return {
-        active: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: {$not: true}  }),
-        inactive: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } }, retired: true })
-      };
+      if (Meteor.user()) {
+        return {
+          active: Games.find({ players: { $elemMatch: { name: Meteor.user().profile.name } }, retired: {$not: true}  }),
+          inactive: Games.find({ players: { $elemMatch: { name: Meteor.user().profile.name } }, retired: true })
+        };
+      }
+      return {};
     }
   });
+
   this.route('game_search', {
     data: function() {
       return {
