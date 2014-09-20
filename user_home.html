@@ -15,9 +15,9 @@
       <div class="col-md-6 col-sm-12">
         <h3>Active Games</h3>
         <table class="table table-striped">
-          <thead>
-            <th colspan="2">Game</th>
-            <th style="width:100%">Scores</th>
+          <thead style="padding-left: 2px;padding-right: 2px;">
+            <th colspan="2" style="padding-left: 2px;padding-right: 2px;">Game</th>
+            <th style="width:100%;padding-left: 2px;padding-right: 2px;">Scores</th>
           </thead>
           <tbody style="vertical-align:middle;">
             {{#each active}}
@@ -31,21 +31,23 @@
                   </a>
                 </td>
                 <td>
-                  {{game.joinedScores}}
+                  {{#each filterPlayerArray players}}
+                    <b>{{name}}:</b> {{score}};
+                  {{/each}}
                 </td>
               </tr>
             {{/each}}
           </tbody>
         </table>
       </div>
-      {{#if inactive.length}}
+      {{#if inactive}}
         <div class="col-md-6 col-sm-12">
           <h3>Recently finished games</h3>
           <table class="table table-striped">
             <thead>
-              <th colspan="2">Game</th>
-              <th>Winner</th>
-              <th style="width:100%">Scores</th>
+              <th colspan="2" style="padding-left: 2px;padding-right: 2px;">Game</th>
+              <th style="padding-left: 2px;padding-right: 2px;">Winner</th>
+              <th style="width:100%;padding-left: 2px;padding-right: 2px;">Scores</th>
             </thead>
             <tbody style="vertical-align:middle;">
               {{#each inactive}}
@@ -62,7 +64,9 @@
                     {{game.winner}}
                   </td>
                   <td>
-                    {{game.joinedScores}}
+                    {{#each filterPlayerArray players}}
+                      <b>{{name}}:</b> {{score}};
+                    {{/each}}
                   </td>
                 </tr>
               {{/each}}
