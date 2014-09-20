@@ -4,7 +4,6 @@ Circles = new Meteor.Collection(null);
 
 if (Meteor.isClient) {
   Session.setDefault('searchQuery', '');
-
   Router.onBeforeAction('dataNotFound');
 }
 
@@ -65,7 +64,9 @@ Router.map(function() {
   this.route('game_search', {
     data: function() {
       return {
-        results: BoardGames.find({name: { $regex: RegExp.escape(Session.get('searchQuery')), $options: 'i' }})
+        results: BoardGames.find({ name: {
+          $regex: RegExp.escape(Session.get('searchQuery')), $options: 'i'
+        }})
       };
     }
   });
