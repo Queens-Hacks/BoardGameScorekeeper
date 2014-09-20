@@ -12,7 +12,7 @@
     </div>
     <hr/>
     <div class="row">
-      {{#if inactive}}
+      {{#if active.count}}
       <div class="col-md-6 col-sm-12">
         <h3>Active Games</h3>
         <table class="table table-striped">
@@ -41,10 +41,10 @@
           </tbody>
         </table>
       </div>
-      {{#else}}
+      {{else}}
         <h4> You have no active games right now.</h4>
       {{/if}}
-      {{#if inactive}}
+      {{#if inactive.count}}
         <div class="col-md-6 col-sm-12">
           <h3>Recently finished games</h3>
           <table class="table table-striped">
@@ -79,7 +79,7 @@
             </tbody>
           </table>
         </div>
-      {{#else}}
+      {{else}}
         <h4>You have not completed any games yet.</h4>
       {{/if}}
     </div>
