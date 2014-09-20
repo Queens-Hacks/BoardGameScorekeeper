@@ -31,7 +31,7 @@ function findCircleMatches(q, cb) {
   console.log(strs);
 
   cb(matches);
-};
+}
 
 // Ensure that people are logged in before they can access _ANYTHING_
 Router.configure({
@@ -76,7 +76,7 @@ if (Meteor.isClient) {
           console.error("ERROR", err);
         } else {
           result = result.map(function (item){
-              item.thumbnail = item.thumbnail[0];
+              if (item.thumbnail) item.thumbnail = item.thumbnail[0];
               item.name = item.name[0].$.value;
               return item;
           });
