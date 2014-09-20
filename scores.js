@@ -60,7 +60,15 @@ Router.configure({
 });
 
 Router.map(function() {
-  this.route('home', { path: '/' });
+  this.route('home', {
+    path: '/',
+    data: function() {
+      return {
+        active: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } } }),
+        inactive: Games.find({ players: { $elemMatch: { name: ((Meteor.user() || {}).profile || {}).name } } })
+      };
+    }
+  });
   this.route('game_search', {
     data: function() {
       return {

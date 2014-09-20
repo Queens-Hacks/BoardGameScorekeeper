@@ -10,5 +10,26 @@
         </div>
       </div>
     </div>
+    <hr/>
+    <div class="row">
+      {{#each active}}
+        {{> single_real_game}}
+      {{/each}}
+    </div>
+    <hr/>
+    <div class="row">
+      {{#each inactive}}
+        {{> single_real_game}}
+      {{/each}}
+    </div>
+  </div>
+</template>
+
+<template name="single_real_game">
+  <div class="col-lg-3 col-md-4 col-xs-6" style="height:225px;">
+    <a class="thumbnail" href="{{pathFor 'play' _id=_id}}" style="padding-top: 5px;">
+      <img class="img-responsive" src="{{game.thumbnail}}" style="max-height:200px">
+      <p align="center" style="margin: 6px 0 0 5px;">{{game.name}}</p>
+    </a>
   </div>
 </template>
