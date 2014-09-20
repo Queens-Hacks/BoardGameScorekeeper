@@ -1,0 +1,7 @@
+# Sublime Text Project files
+*.sublime-*
+
+# generated python files
+__pycache__/
+*.py[cod]
+
