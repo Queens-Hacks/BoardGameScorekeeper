@@ -1,4 +1,12 @@
-Games = new Meteor.Collection('games');
+Games = new Meteor.Collection('games', {
+  transform: function(game) {
+    console.log(game);
+    var theGame = BoardGames.findOne(game.game);
+    console.log(theGame);
+    game.game = theGame;
+    return game; // You lost
+  }
+});
 Circles = new Meteor.Collection(null);
 
 
@@ -8,7 +16,7 @@ if (Meteor.isClient) {
   Router.onBeforeAction('dataNotFound');
   // Get the scopes when you log in! Woo!
   var scopes = ['https://www.googleapis.com/auth/plus.me', 'https://www.googleapis.com/auth/plus.circles.read'];
-  Accounts.ui.config({'requestPermissions': {'google':scopes}});
+  Accounts.ui.config({'requestPermissions': {'google':scopes}, 'requestOfflineToken': {'google': true}});
 }
 
 // Yeah, we need to do this...
@@ -73,6 +81,18 @@ if (Meteor.isClient) {
     'keyup .search-form': function (e, tmpl) {
       e.preventDefault();
       Session.set('searchQuery', tmpl.find('input[name=gameName]').value);
+    },
+    'click .new-game-link': function(e, tmpl) {
+      e.preventDefault();
+      var _id = e.currentTarget.getAttribute('data-id');
+
+      Meteor.call('makeGame', _id, function(err, res) {
+        if (err) {
+          console.error(err);
+          return;
+        }
+        Router.go('play', {_id: res});
+      });
     }
   });
 
@@ -245,19 +265,16 @@ if (Meteor.isServer) {
       return people;
     },
 
-    makeGame: function(gameName, gameThumbnail) {
+    makeGame: function(_id) {
       if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to make a game');
 
       var user = Meteor.users.findOne(this.userId);
       return Games.insert({
         players: [{
-          name: user.services.google.displayName,
+          name: user.profile.name,
           score: 0
         }],
-        game: {
-          name: gameName,
-          thumbnail: gameThumbnail
-        }
+        game: _id
       });
     }
   });
