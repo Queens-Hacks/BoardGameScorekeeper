@@ -7,42 +7,43 @@ Games = new Meteor.Collection('games', {
 });
 Circles = new Meteor.Collection('circles');
 
-function getCircles(userId) {
-  // Get all of the circles
-  try {
-    var user = Meteor.users.findOne(userId);
-    var accessToken = user.services.google.accessToken;
-    var id = user.services.google.id;
-    var circles = (HTTP.get("https://www.googleapis.com/plusDomains/v1/people/" + id + "/circles", {
-      params: { access_token: accessToken }
-    })).data.items;
-
-    var people = circles.map(function(circle) {
-      var peoplePeople = HTTP.get("https://www.googleapis.com/plusDomains/v1/circles/" + circle.id + "/people", {
-        params: { access_token: accessToken }
-      });
-
-      return peoplePeople.data.items;
-    }).reduce(function(x, y) { return x.concat(y); }, []);
-
-    Circles.remove({ user: userId });
-    people.forEach(function(person) {
-      person.user = userId;
-      Circles.insert(person);
-    });
-  } catch(e) { /* Non-event, no big deal */ }
-
-  return people;
-}
-
 if (Meteor.isServer) {
-  Meteor.users.find().observeChanges({
-    added: function(id) {
-      getCircles(id);
-    },
-    changed: function(id) {
-      getCircles(id);
+  function getCircles(user) {
+    // Get all of the circles
+    try {
+      var accessToken = user.services.google.accessToken;
+      var id = user.services.google.id;
+      var circles = (HTTP.get("https://www.googleapis.com/plusDomains/v1/people/" + id + "/circles", {
+        params: { access_token: accessToken }
+      })).data.items;
+
+      var people = circles.map(function(circle) {
+        var peoplePeople = HTTP.get("https://www.googleapis.com/plusDomains/v1/circles/" + circle.id + "/people", {
+          params: { access_token: accessToken }
+        });
+
+        return peoplePeople.data.items;
+      }).reduce(function(x, y) { return x.concat(y); }, []);
+
+      console.log('Successfully retrieved Circles:', people.length);
+
+      Circles.remove({ user: user._id });
+      people.forEach(function(person) {
+        person.user = user._id;
+        Circles.insert(person);
+      });
+    } catch(e) {
+      console.error('Error while getting Circles:', e);
     }
+  }
+
+  Accounts.onCreateUser(function(options, user) {
+    getCircles(user);
+    return user;
+  });
+
+  Accounts.onLogin(function(options) {
+    getCircles(options.user);
   });
 }
 
@@ -266,46 +267,7 @@ if (Meteor.isClient) {
 
 }
 
-var XML2JSCONFIG = {
-  explicitArray: true
-};
 if (Meteor.isServer) {
-  Meteor.methods({
-    search: function(query){
-      check(query, String);
-      var url = 'http://www.boardgamegeek.com/xmlapi2/search?query='+encodeURIComponent(query)+'&type=boardgame,boardgameexpansion';
-      var xml = HTTP.get(url).content;
-      var games;
-      xml2js.parseString(xml,
-        XML2JSCONFIG,
-        function (err, result){
-          if (err){
-            console.error("ERROR", err);
-          } else {
-            var gameIds = result.items.item.slice(0, Math.min(10, result.items.item.length)).map(
-              function (game){
-                return game.$.id;
-              }
-            );
-            var xml2 = HTTP.get('http://www.boardgamegeek.com/xmlapi2/thing?&id=' + gameIds.join()).content;
-            xml2js.parseString(xml2,
-              XML2JSCONFIG,
-              function (err, result){
-                if (err){
-                  console.error("ERROR", err);
-                } else {
-                  games = result.items.item;
-                }
-              }
-            );
-          }
-        }
-      );
-      return games;
-    }
-  });
-
-
   Meteor.methods({
     makeGame: function(_id) {
       if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to make a game');
