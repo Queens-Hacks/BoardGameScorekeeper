@@ -1,9 +1,9 @@
 Template.play.events({
   'click .add-player': function(e, tmpl) {
-    var gameId = Router._currentController.params._id;
-    var game = Games.findOne(gameId);
+    var matchId = Router._currentController.params._id;
+    var match = Matches.findOne(matchId);
 
-    Games.update(gameId, {
+    Matches.update(matchId, {
       $push: {
         players: {
           _id: Random.id(),
@@ -15,11 +15,11 @@ Template.play.events({
   },
 
   'click .end-game-button': function(e, tmpl) {
-    var gameId = Router.current().params._id;
-    var game = Games.findOne(gameId);
+    var matchId = Router.current().params._id;
+    var match = Matches.findOne(matchId);
 
     if (confirm('Are you sure you want to end the game?')) {
-      Games.update(gameId, {
+      Matches.update(matchId, {
         $set: { retired: true }
       });
     }
@@ -29,15 +29,15 @@ Template.play.events({
     var val = e.currentTarget.value;
     var _id = e.currentTarget.getAttribute('data-id');
 
-    var gameId = Router._currentController.params._id;
-    var game = Games.findOne(gameId);
+    var matchId = Router._currentController.params._id;
+    var match = Matches.findOne(matchId);
 
-    game.players.forEach(function(player, i) {
+    match.players.forEach(function(player, i) {
       if (_id === player._id) {
         var set = {};
         set['players.' + i + '.score'] = parseFloat(val);
 
-        Games.update(gameId, {$set: set});
+        Matches.update(matchId, {$set: set});
       }
     });
   },
@@ -46,15 +46,15 @@ Template.play.events({
     var val = e.currentTarget.value;
     var _id = e.currentTarget.getAttribute('data-id');
 
-    var gameId = Router._currentController.params._id;
-    var game = Games.findOne(gameId);
+    var matchId = Router._currentController.params._id;
+    var match = Matches.findOne(matchId);
 
-    game.players.forEach(function(player, i) {
+    match.players.forEach(function(player, i) {
       if (_id === player._id) {
         var set = {};
         set['players.' + i + '.name'] = val;
 
-        Games.update(gameId, {$set: set});
+        Matches.update(matchId, {$set: set});
       }
     });
   },
@@ -62,10 +62,10 @@ Template.play.events({
   'click .player-remove': function(e, tmpl) {
     var _id = e.currentTarget.getAttribute('data-id');
 
-    var gameId = Router._currentController.params._id;
-    var game = Games.findOne(gameId);
+    var matchId = Router._currentController.params._id;
+    var match = Matches.findOne(matchId);
 
-    Games.update(gameId, {$set: {'players': game.players.filter(function(player) { return _id !== player._id; })}});
+    Matches.update(matchId, {$set: {'players': match.players.filter(function(player) { return _id !== player._id; })}});
   }
 });
 

@@ -32,8 +32,20 @@ Router.map(function() {
     data: function() {
       if (Meteor.user()) {
         return {
-          active: Games.find({ players: { $elemMatch: { name: Meteor.user().profile.name } }, retired: {$not: true}  }),
-          inactive: Games.find({ players: { $elemMatch: { name: Meteor.user().profile.name } }, retired: true })
+          active: Matches.find({
+            players: {
+              $elemMatch: {
+                name: Meteor.user().profile.name
+              }
+            },
+            retired: {$not: true}
+          }),
+          inactive: Matches.find({
+            players: {
+              $elemMatch: {
+                name: Meteor.user().profile.name
+              }
+            }, retired: true })
         };
       }
       return {};
@@ -43,7 +55,7 @@ Router.map(function() {
   this.route('game_search', {
     data: function() {
       return {
-        results: BoardGames.find({ name: {
+        results: Games.find({ name: {
           $regex: RegExp.escape(Session.get('searchQuery')), $options: 'i'
         }})
       };
@@ -51,7 +63,6 @@ Router.map(function() {
   });
   this.route('play', {
     path: '/play/:_id',
-    data: function() { return Games.findOne({ _id: this.params._id }); }
+    data: function() { return Matches.findOne({ _id: this.params._id }); }
   });
 });
-

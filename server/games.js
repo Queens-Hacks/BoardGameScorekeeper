@@ -1,9 +1,9 @@
 Meteor.methods({
-  makeGame: function(_id) {
+  makeGame: function(gameId) {
     if (! this.userId) throw new Meteor.Error(403, 'You must be logged in to make a game');
 
     var user = Meteor.users.findOne(this.userId);
-    return Games.insert({
+    return Matches.insert({
       players: [
         {
           _id: Random.id(),
@@ -21,7 +21,7 @@ Meteor.methods({
           score: 0
         }
       ],
-      game: _id
+      game: gameId
     });
   }
 });
