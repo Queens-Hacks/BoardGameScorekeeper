@@ -74,6 +74,7 @@ Template.textbox.rendered = function(tmpl) {
     var strs = Circles.find({ user: Meteor.userId() }).fetch().map(function(x) {
       return x.displayName;
     });
+    strs.push(Meteor.user().profile.name);
 
     var matches, substrRegex;
 
