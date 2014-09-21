@@ -21,7 +21,8 @@ Meteor.methods({
           score: 0
         }
       ],
-      game: gameId
+      game: gameId,
+      owner: user._id
     });
   }
 });
