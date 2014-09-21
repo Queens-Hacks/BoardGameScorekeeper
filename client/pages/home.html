@@ -18,16 +18,16 @@
         <table class="table table-striped">
           <thead style="padding-left: 2px;padding-right: 2px;">
             <th colspan="2" style="padding-left: 2px;padding-right: 2px;">Game</th>
-            <th style="width:100%;padding-left: 2px;padding-right: 2px;">Scores</th>
+            <th style="padding-left: 2px;padding-right: 2px;">Scores</th>
           </thead>
           <tbody style="vertical-align:middle;">
             {{#each active}}
               <tr>
-                <td style="white-space: nowrap;" align="center">
+                <td align="center">
                   <img src="{{game.thumbnail}}" style="max-height:40px">
                 </td>
                 <td>
-                  <a href="{{pathFor 'play' _id=_id}}" style="white-space: nowrap;">
+                  <a href="{{pathFor 'play' _id=_id}}">
                     {{game.name}}
                   </a>
                 </td>
@@ -50,16 +50,16 @@
         <table class="table table-striped">
           <thead>
             <th colspan="2" style="padding-left: 2px;padding-right: 2px;">Game</th>
-            <th style="width:100%;padding-left: 2px;padding-right: 2px;">Scores</th>
+            <th style="padding-left: 2px;padding-right: 2px;">Scores</th>
           </thead>
           <tbody style="vertical-align:middle;">
             {{#each friends}}
               <tr>
-                <td style="white-space: nowrap;" align="center">
+                <td align="center">
                   <img src="{{game.thumbnail}}" style="max-height:40px">
                 </td>
                 <td>
-                  <a href="{{pathFor 'play' _id=_id}}" style="white-space: nowrap;">
+                  <a href="{{pathFor 'play' _id=_id}}">
                     {{game.name}}
                   </a>
                 </td>
@@ -83,16 +83,16 @@
           <thead>
             <th colspan="2" style="padding-left: 2px;padding-right: 2px;">Game</th>
             <th style="padding-left: 2px;padding-right: 2px;">Winner</th>
-            <th style="width:100%;padding-left: 2px;padding-right: 2px;">Scores</th>
+            <th style="padding-left: 2px;padding-right: 2px;">Scores</th>
           </thead>
           <tbody style="vertical-align:middle;">
             {{#each inactive}}
               <tr>
-                <td style="white-space: nowrap;" align="center">
+                <td align="center">
                   <img src="{{game.thumbnail}}" style="max-height:40px">
                 </td>
                 <td>
-                  <a href="{{pathFor 'play' _id=_id}}" style="white-space: nowrap;">
+                  <a href="{{pathFor 'play' _id=_id}}">
                     {{game.name}}
                   </a>
                 </td>
