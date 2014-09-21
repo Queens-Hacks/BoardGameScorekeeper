@@ -1,7 +1,7 @@
 Session.setDefault('searchQuery', '');
 
 
-Template.game_search.events({
+Template.search.events({
   'keyup .search-form': function (e, tmpl) {
     e.preventDefault();
     Session.set('searchQuery', tmpl.find('input[name=gameName]').value);
@@ -19,5 +19,3 @@ Template.game_search.events({
     });
   }
 });
-
-

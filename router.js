@@ -52,7 +52,7 @@ Router.map(function() {
     }
   });
 
-  this.route('game_search', {
+  this.route('search', {
     data: function() {
       return {
         results: Games.find({ name: {
