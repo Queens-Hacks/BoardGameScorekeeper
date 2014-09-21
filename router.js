@@ -45,7 +45,22 @@ Router.map(function() {
               $elemMatch: {
                 name: Meteor.user().profile.name
               }
-            }, retired: true })
+            }, retired: true
+          }),
+          friends: Matches.find({
+            players: {
+              $elemMatch: {
+                name: { $in: Circles.find({ user: Meteor.userId() }).fetch().map(function(circle) {
+                  return circle.displayName;
+                }) }
+              },
+              $not: {
+                $elemMatch: {
+                  name: Meteor.user().profile.name
+                }
+              }
+            }
+          })
         };
       }
       return {};

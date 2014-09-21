@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-md-12">
         <div align="center">
-          <a class="btn btn-success" href="{{pathFor 'game_search'}}">Play a new game</a>
+          <a class="btn btn-success" href="{{pathFor 'search'}}">Play a new game</a>
           <!-- view own stats -->
           <!-- view leaderboards -->
           <!-- recently played games -->
@@ -43,6 +43,38 @@
       </div>
       {{else}}
         <h4> You have no active games right now.</h4>
+      {{/if}}
+      {{#if friends.count}}
+        <div class="col-md-6 col-sm-12">
+          <h3>Games containing your Friends</h3>
+          <table class="table table-striped">
+            <thead>
+              <th colspan="2" style="padding-left: 2px;padding-right: 2px;">Game</th>
+              <th style="width:100%;padding-left: 2px;padding-right: 2px;">Scores</th>
+            </thead>
+            <tbody style="vertical-align:middle;">
+              {{#each friends}}
+                <tr>
+                  <td style="white-space: nowrap;" align="center">
+                    <img src="{{game.thumbnail}}" style="max-height:40px">
+                  </td>
+                  <td>
+                    <a href="{{pathFor 'play' _id=_id}}" style="white-space: nowrap;">
+                      {{game.name}}
+                    </a>
+                  </td>
+                  <td>
+                    {{#each filterPlayerArray players}}
+                      <b>{{name}}:</b> {{score}};
+                    {{/each}}
+                  </td>
+                </tr>
+              {{/each}}
+            </tbody>
+          </table>
+        </div>
+      {{else}}
+        <h4>Your friends aren't in any games (that you aren't in)</h4>
       {{/if}}
       {{#if inactive.count}}
         <div class="col-md-6 col-sm-12">
