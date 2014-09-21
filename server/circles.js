@@ -28,10 +28,10 @@ function getCircles(user) {
 }
 
 Accounts.onCreateUser(function(options, user) {
-  getCircles(user);
+  // getCircles(user);
   return user;
 });
 
 Accounts.onLogin(function(options) {
-  getCircles(options.user);
+  // getCircles(options.user);
 });

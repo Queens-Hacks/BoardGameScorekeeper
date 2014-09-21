@@ -1,6 +1,6 @@
 Template.play.events({
   'click .add-player': function(e, tmpl) {
-    var matchId = Router._currentController.params._id;
+    var matchId = Router.current().params._id;
     var match = Matches.findOne(matchId);
 
     Matches.update(matchId, {
@@ -29,7 +29,7 @@ Template.play.events({
     var val = e.currentTarget.value;
     var _id = e.currentTarget.getAttribute('data-id');
 
-    var matchId = Router._currentController.params._id;
+    var matchId = Router.current().params._id;
     var match = Matches.findOne(matchId);
 
     match.players.forEach(function(player, i) {
@@ -46,7 +46,7 @@ Template.play.events({
     var val = e.currentTarget.value;
     var _id = e.currentTarget.getAttribute('data-id');
 
-    var matchId = Router._currentController.params._id;
+    var matchId = Router.current().params._id;
     var match = Matches.findOne(matchId);
 
     match.players.forEach(function(player, i) {
@@ -62,12 +62,27 @@ Template.play.events({
   'click .player-remove': function(e, tmpl) {
     var _id = e.currentTarget.getAttribute('data-id');
 
-    var matchId = Router._currentController.params._id;
+    var matchId = Router.current().params._id;
     var match = Matches.findOne(matchId);
 
     Matches.update(matchId, {$set: {'players': match.players.filter(function(player) { return _id !== player._id; })}});
   }
 });
+
+Template.play.isOwner = function() {
+  var matchId = Router.current().params._id;
+  var match = Matches.findOne(matchId);
+
+  return match.owner === Meteor.userId();
+};
+
+Template.play.canEdit = function() {
+  var matchId = Router.current().params._id;
+  var match = Matches.findOne(matchId);
+
+  return Template.play.isOwner() && ! match.retired;
+};
+Template.textbox.canEdit = Template.play.canEdit;
 
 Template.textbox.rendered = function(tmpl) {
   function findCircleMatches(q, cb) {

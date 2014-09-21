@@ -16,20 +16,20 @@
                   {{> textbox}}
                 </th>
                 {{/each}}
-                {{#unless retired}}
+                {{#if canEdit}}
                 <th style="width: 1px; padding-left: 0px"><button type="button" class="btn btn-success add-player">+</button></th>
-                {{/unless}}
+                {{/if}}
               </tr>
             </thead>
             <tbody>
               <tr>
                 {{#each players}}
                 <td>
-                  <input type="number" class="player-score-input form-control" data-id="{{_id}}" value="{{score}}" disabled="{{../retired}}">
+                  <input type="number" class="player-score-input form-control" data-id="{{_id}}" value="{{score}}" disabled="{{not canEdit}}">
                 </td>
                 {{/each}}
               </tr>
-              {{#unless retired}}
+              {{#if canEdit}}
               <tr>
                 {{#each players}}
                 <td style="padding: 0px; border-top: 0px; padding-right: 10px; padding-bottom: 5px">
@@ -37,7 +37,7 @@
                 </td>
                 {{/each}}
               </tr>
-              {{/unless}}
+              {{/if}}
             </tbody>
           </table>
         </div>
@@ -45,7 +45,9 @@
         {{#if retired}}
           <div class="alert alert-danger text-center">Game is Over</div>
         {{else}}
+          {{#if isAdmin}}
           <button type="button" class="btn btn-danger end-game-button btn-block">End Game</button>
+          {{/if}}
         {{/if}}
       </div>
     </div>
@@ -53,5 +55,5 @@
 </template>
 
 <template name="textbox">
-  <input type="text" class="player-name-input form-control" placeholder="Player name..." value="{{name}}" style="border:none" data-id="{{_id}}" disabled="{{../retired}}">
+  <input type="text" class="player-name-input form-control" placeholder="Player name..." value="{{name}}" style="border:none" data-id="{{_id}}" disabled="{{not canEdit}}">
 </template>
